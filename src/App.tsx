@@ -22,9 +22,17 @@ function App() {
 
       <section className="container mt-16">
         <div className="w-full flex relative pb-4 border-b-2 border-[#333] font-semibold text-[#8284FA]">
-          <h2 className="justify-start">Tarefas criadas</h2>
+          <h2 className="justify-start">
+            Tarefas criadas{' '}
+            <span className="text-white bg-gray-600 rounded-lg px-2">0</span>
+          </h2>
 
-          <h2 className="absolute right-0">Concluídas</h2>
+          <h2 className="absolute right-0">
+            Concluídas{' '}
+            <span className="text-white bg-gray-600 rounded-lg px-2">
+              0 de 0
+            </span>
+          </h2>
         </div>
       </section>
     </div>
