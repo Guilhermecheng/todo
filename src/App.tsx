@@ -6,9 +6,7 @@ function App() {
   return (
     <div className="flex flex-col items-center relative">
       <div className="w-full h-[200px] bg-[#0D0D0D] flex items-center justify-center">
-        <h1 className="text-white">
-          to<span>do</span>
-        </h1>
+        <img src="./assets/todo.png" />
       </div>
 
       <section className="absolute top-[172px] flex gap-x-4 container">
