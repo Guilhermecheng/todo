@@ -1,29 +1,30 @@
-import { useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
+import uuid from 'react-uuid';
 
 import { HiOutlinePlusCircle } from 'react-icons/hi';
+import { GlobalContext, TaskProps } from './contexts/Tasks';
 import { TaskList } from './components/TaskList';
 
 function App() {
-  const [input, setInput] = useState('');
+  const { taskList, setTaskList, isDoneCount, count, setCount } =
+    useContext(GlobalContext);
+
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [taskList, setTaskList] = useState([
-    {
-      task: 'oi bbe',
-      isDone: false,
-    },
-  ]);
+  const [input, setInput] = useState('');
 
   function saveNewTaskToList(e: any) {
-    let newList = taskList;
-    newList.push({
-      task: input,
-      isDone: false,
-    });
-    // @ts-ignore (us this comment if typescript raises an error)
-    inputRef.current.value = '';
-    setInput('');
-
-    setTaskList(newList);
+    if (input !== '') {
+      let newList = taskList;
+      newList.push({
+        id: uuid(),
+        task: input,
+        isDone: false,
+      });
+      // @ts-ignore (us this comment if typescript raises an error)
+      inputRef.current.value = '';
+      setInput('');
+      setTaskList(newList);
+    }
   }
 
   return (
@@ -61,13 +62,13 @@ function App() {
           <h2 className="absolute right-0">
             Concluídas{' '}
             <span className="text-white bg-gray-600 rounded-lg px-2">
-              0 de 0
+              {count} de {taskList.length}
             </span>
           </h2>
         </div>
       </section>
 
-      <TaskList taskList={taskList} />
+      <TaskList />
     </div>
   );
 }
