@@ -5,10 +5,10 @@ import { useContext, useState } from 'react';
 import { GlobalContext, TaskProps } from '../contexts/Tasks';
 
 interface TaskCompProps extends TaskProps {
-  taskId: number;
+  taskId?: string;
 }
 
-export function Task({ task, taskId, isDone }: TaskCompProps) {
+export function Task({ task, id, isDone }: TaskProps) {
   const { taskList, setTaskList, isDoneCount, count, setCount } =
     useContext(GlobalContext);
   const [taskState, setTaskState] = useState(isDone);
@@ -18,7 +18,7 @@ export function Task({ task, taskId, isDone }: TaskCompProps) {
     let itemIndex = taskList.findIndex((x) => x.id === id);
 
     list[itemIndex] = {
-      id: taskId,
+      id,
       task,
       isDone: !isDone,
     };
@@ -38,7 +38,7 @@ export function Task({ task, taskId, isDone }: TaskCompProps) {
     <div className="relative px-4 py-4 bg-[#262626] flex flex-row text-white items-center rounded-md mb-4">
       {taskState ? (
         <IoCheckmarkCircleSharp
-          onClick={() => getTaskDone(taskId)}
+          onClick={() => getTaskDone(id)}
           size={20}
           className="text-purple-400"
         />
@@ -46,14 +46,14 @@ export function Task({ task, taskId, isDone }: TaskCompProps) {
         <MdOutlineRadioButtonUnchecked
           size={20}
           className="text-blue-400 cursor-pointer hover:text-purple-400"
-          onClick={() => getTaskDone(taskId)}
+          onClick={() => getTaskDone(id)}
         />
       )}
       <span className="pl-4">{task}</span>
       <HiOutlineTrash
         size={20}
         className="absolute right-4 cursor-pointer text-gray-500 hover:text-gray-100"
-        onClick={() => deleteTask(taskId)}
+        onClick={() => deleteTask(id)}
       />
     </div>
   );

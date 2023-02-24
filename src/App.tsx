@@ -3,7 +3,8 @@ import uuid from 'react-uuid';
 
 import { HiOutlinePlusCircle } from 'react-icons/hi';
 import { GlobalContext, TaskProps } from './contexts/Tasks';
-import { TaskList } from './components/TaskList';
+import { Task } from './components/Task';
+import { NoTask } from './components/NoTask';
 
 function App() {
   const { taskList, setTaskList, isDoneCount, count, setCount } =
@@ -24,6 +25,8 @@ function App() {
       inputRef.current.value = '';
       setInput('');
       setTaskList(newList);
+      let counter = isDoneCount();
+      setCount(counter);
     }
   }
 
@@ -68,7 +71,23 @@ function App() {
         </div>
       </section>
 
-      <TaskList />
+      {/* <TaskList /> */}
+      {taskList.length > 0 ? (
+        <div className="container mt-4">
+          {taskList.map((task: TaskProps, i: number) => {
+            return (
+              <Task
+                key={i}
+                id={task.id}
+                task={task.task}
+                isDone={task.isDone}
+              />
+            );
+          })}
+        </div>
+      ) : (
+        <NoTask />
+      )}
     </div>
   );
 }
