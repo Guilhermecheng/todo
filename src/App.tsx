@@ -7,11 +7,12 @@ import { Task } from './components/Task';
 import { NoTask } from './components/NoTask';
 
 function App() {
-  const { taskList, setTaskList, isDoneCount, count, setCount } =
-    useContext(GlobalContext);
+  const { taskList, setTaskList } = useContext(GlobalContext);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [input, setInput] = useState('');
+  const [count, setCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
 
   function saveNewTaskToList(e: any) {
     if (input !== '') {
@@ -27,7 +28,18 @@ function App() {
       setTaskList(newList);
       let counter = isDoneCount();
       setCount(counter);
+      setTotalCount(taskList.length);
     }
+  }
+
+  function isDoneCount() {
+    let counter = 0;
+    taskList.filter((current: TaskProps) => {
+      if (current.isDone) {
+        counter++;
+      }
+    });
+    return counter;
   }
 
   return (
@@ -58,20 +70,19 @@ function App() {
           <h2 className="justify-start">
             Tarefas criadas{' '}
             <span className="text-white bg-gray-600 rounded-lg px-2">
-              {taskList.length}
+              {totalCount}
             </span>
           </h2>
 
           <h2 className="absolute right-0">
             Concluídas{' '}
             <span className="text-white bg-gray-600 rounded-lg px-2">
-              {count} de {taskList.length}
+              {count} de {totalCount}
             </span>
           </h2>
         </div>
       </section>
 
-      {/* <TaskList /> */}
       {taskList.length > 0 ? (
         <div className="container mt-4">
           {taskList.map((task: TaskProps, i: number) => {
@@ -81,6 +92,8 @@ function App() {
                 id={task.id}
                 task={task.task}
                 isDone={task.isDone}
+                setCount={setCount}
+                setTotalCount={setTotalCount}
               />
             );
           })}

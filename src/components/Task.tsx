@@ -1,17 +1,33 @@
 import { MdOutlineRadioButtonUnchecked } from 'react-icons/md';
 import { IoCheckmarkCircleSharp } from 'react-icons/io5';
 import { HiOutlineTrash } from 'react-icons/hi';
-import { useContext, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { GlobalContext, TaskProps } from '../contexts/Tasks';
 
 interface TaskCompProps extends TaskProps {
-  taskId?: string;
+  setCount: Dispatch<SetStateAction<number>>;
+  setTotalCount: Dispatch<SetStateAction<number>>;
 }
 
-export function Task({ task, id, isDone }: TaskProps) {
-  const { taskList, setTaskList, isDoneCount, count, setCount } =
-    useContext(GlobalContext);
+export function Task({
+  task,
+  id,
+  isDone,
+  setCount,
+  setTotalCount,
+}: TaskCompProps) {
+  const { taskList, setTaskList } = useContext(GlobalContext);
   const [taskState, setTaskState] = useState(isDone);
+
+  function isDoneCount() {
+    let counter = 0;
+    taskList.filter((current: TaskProps) => {
+      if (current.isDone) {
+        counter++;
+      }
+    });
+    return counter;
+  }
 
   function getTaskDone(id: string) {
     let list = taskList;
@@ -23,6 +39,7 @@ export function Task({ task, id, isDone }: TaskProps) {
       isDone: !isDone,
     };
     setTaskList((taskList) => [...taskList, ...list]);
+    console.log(taskList);
     setTaskState(!taskState);
     let counter = isDoneCount();
     setCount(counter);
@@ -32,6 +49,11 @@ export function Task({ task, id, isDone }: TaskProps) {
     let itemIndex = taskList.findIndex((x) => x.id === id);
     let newList = taskList.splice(itemIndex, 1);
     setTaskList((taskList) => [...taskList, ...newList]);
+    console.log(taskList);
+
+    let counter = isDoneCount();
+    setCount(counter);
+    setTotalCount(taskList.length);
   }
 
   return (
