@@ -22,16 +22,16 @@ export function Task({ task, taskId, isDone }: TaskCompProps) {
       task,
       isDone: !isDone,
     };
-    setTaskList([...taskList, ...list]);
+    setTaskList((taskList) => [...taskList, ...list]);
     setTaskState(!taskState);
-    let counter = isDoneCount;
+    let counter = isDoneCount();
     setCount(counter);
   }
 
   function deleteTask(id: string) {
     let itemIndex = taskList.findIndex((x) => x.id === id);
     let newList = taskList.splice(itemIndex, 1);
-    setTaskList([...newList]);
+    setTaskList((taskList) => [...taskList, ...newList]);
   }
 
   return (
