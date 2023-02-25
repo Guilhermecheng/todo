@@ -16,6 +16,7 @@ function App() {
   const [input, setInput] = useState('');
   const [count, setCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [apiResp, setApiResp] = useState();
 
   function saveNewTaskToList() {
     if (input !== '') {
@@ -60,7 +61,7 @@ function App() {
         .query({
           query: gql`
           query Tasks {
-            tasks {
+            tasks(orderBy: createdAt_DESC) {
               createdAt
               id
               isTaskDone
@@ -77,7 +78,15 @@ function App() {
             },
           },
         })
-        .then((response) => console.log(response));
+        .then((response) => {
+          // console.log(response.data.tasks);
+          return response.data.tasks;
+        })
+        .then((data) => {
+          console.log(data);
+          setApiResp(data);
+          console.log(apiResp);
+        });
     } catch (err) {
       console.log(err);
     }
@@ -125,15 +134,28 @@ function App() {
         </div>
       </section>
 
-      {taskList.length > 0 ? (
+      {apiResp.length > 0 ? (
         <div className="container mt-4">
-          {taskList.map((task: TaskProps, i: number) => {
+          {/* {taskList.map((task: TaskProps, i: number) => {
             return (
               <Task
                 key={i}
                 id={task.id}
                 task={task.task}
                 isDone={task.isDone}
+                setCount={setCount}
+                setTotalCount={setTotalCount}
+              />
+            );
+          })} */}
+
+          {apiResp.map((task: any, i: number) => {
+            return (
+              <Task
+                key={i}
+                id={task.id}
+                task={task.taskDescription}
+                isDone={task.isTaskDone}
                 setCount={setCount}
                 setTotalCount={setTotalCount}
               />

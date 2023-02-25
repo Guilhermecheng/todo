@@ -13,7 +13,8 @@ export interface TaskProps {
 
 interface GlobalContextProps {
   taskList: TaskProps[];
-  setTaskList: Dispatch<SetStateAction<TaskProps[]>>;
+  // setTaskList: Dispatch<SetStateAction<TaskProps[]>>;
+  setTaskList: Dispatch<SetStateAction<any>>;
 }
 
 export const GlobalContext = createContext<GlobalContextProps>({
