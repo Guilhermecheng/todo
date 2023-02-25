@@ -8,7 +8,7 @@
 </div>
 <br/>
 
-todo is a task manager, a "to do" list. Check it out!<br/>
+***todo*** is a task manager, a "to do" list. Check it out!<br/>
 https://todo-one-theta.vercel.app/ 
 
 You can:
