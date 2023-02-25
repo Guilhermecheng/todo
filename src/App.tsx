@@ -1,6 +1,9 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import uuid from 'react-uuid';
 
+import client from './services/apolloClient';
+import { gql } from '@apollo/client';
+
 import { HiOutlinePlusCircle } from 'react-icons/hi';
 import { GlobalContext, TaskProps } from './contexts/Tasks';
 import { Task } from './components/Task';
@@ -50,6 +53,35 @@ function App() {
       saveNewTaskToList();
     }
   }
+
+  useEffect(() => {
+    try {
+      client
+        .query({
+          query: gql`
+          query Tasks {
+            tasks {
+              createdAt
+              id
+              isTaskDone
+              publishedAt
+              taskDescription
+              updatedAt
+            }
+          }`,
+          context: {
+            headers: {
+              Authorization: `Bearer ${
+                import.meta.env.VITE_HYGRAPH_TOKEN as string
+              }`,
+            },
+          },
+        })
+        .then((response) => console.log(response));
+    } catch (err) {
+      console.log(err);
+    }
+  }, []);
 
   return (
     <div className="flex flex-col items-center relative">
