@@ -69,14 +69,14 @@ function App() {
         <div className="w-full flex relative font-semibold text-[#8284FA]">
           <h2 className="justify-start">
             Tarefas criadas{' '}
-            <span className="text-white bg-gray-600 rounded-lg px-2">
+            <span className="text-white bg-gray-600 rounded-lg px-2 ml-2">
               {totalCount}
             </span>
           </h2>
 
           <h2 className="absolute right-0">
             Concluídas{' '}
-            <span className="text-white bg-gray-600 rounded-lg px-2">
+            <span className="text-white bg-gray-600 rounded-lg px-2 ml-2">
               {count} de {totalCount}
             </span>
           </h2>
