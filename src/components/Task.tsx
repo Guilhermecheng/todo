@@ -39,7 +39,7 @@ export function Task({
       isDone: !isDone,
     };
     setTaskList((taskList) => [...taskList, ...list]);
-    console.log(taskList);
+    // console.log(taskList);
     setTaskState(!taskState);
     let counter = isDoneCount();
     setCount(counter);
@@ -49,7 +49,7 @@ export function Task({
     let itemIndex = taskList.findIndex((x) => x.id === id);
     let newList = taskList.splice(itemIndex, 1);
     setTaskList((taskList) => [...taskList, ...newList]);
-    console.log(taskList);
+    // console.log(taskList);
 
     let counter = isDoneCount();
     setCount(counter);

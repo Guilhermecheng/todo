@@ -14,7 +14,7 @@ function App() {
   const [count, setCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
 
-  function saveNewTaskToList(e: any) {
+  function saveNewTaskToList() {
     if (input !== '') {
       let newList = taskList;
       newList.push({
@@ -22,7 +22,7 @@ function App() {
         task: input,
         isDone: false,
       });
-      // @ts-ignore (us this comment if typescript raises an error)
+      // @ts-ignore
       inputRef.current.value = '';
       setInput('');
       setTaskList(newList);
@@ -42,6 +42,15 @@ function App() {
     return counter;
   }
 
+  function onKeySubmit(event: any) {
+    if (
+      (event.code === 'Enter' || event.code === 'NumpadEnter') &&
+      event.target.id === 'inputText'
+    ) {
+      saveNewTaskToList();
+    }
+  }
+
   return (
     <div className="flex flex-col items-center relative">
       <div className="w-full h-[200px] bg-[#0D0D0D] flex items-center justify-center">
@@ -56,6 +65,7 @@ function App() {
           placeholder="Adicione uma nova tarefa"
           className="w-full rounded-md bg-[#262626] px-4 py-2 text-white outline-none focus:border-2 focus:border-[#8284FA]"
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => onKeySubmit(e)}
         />
         <button
           onClick={saveNewTaskToList}
