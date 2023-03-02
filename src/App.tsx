@@ -1,22 +1,25 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import uuid from 'react-uuid';
 
-import client from './services/apolloClient';
-import { gql } from '@apollo/client';
+import { useQuery, gql } from '@apollo/client';
 
 import { HiOutlinePlusCircle } from 'react-icons/hi';
 import { GlobalContext, TaskProps } from './contexts/Tasks';
 import { Task } from './components/Task';
 import { NoTask } from './components/NoTask';
+import { GET_TODOS } from './queries/queries';
 
 function App() {
+  const { loading, error, data } = useQuery(GET_TODOS);
+  // console.log(data);
+
   const { taskList, setTaskList } = useContext(GlobalContext);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [input, setInput] = useState('');
   const [count, setCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
-  const [apiResp, setApiResp] = useState();
+  const [apiResp, setApiResp] = useState([]);
 
   function saveNewTaskToList() {
     if (input !== '') {
@@ -55,42 +58,42 @@ function App() {
     }
   }
 
-  useEffect(() => {
-    try {
-      client
-        .query({
-          query: gql`
-          query Tasks {
-            tasks(orderBy: createdAt_DESC) {
-              createdAt
-              id
-              isTaskDone
-              publishedAt
-              taskDescription
-              updatedAt
-            }
-          }`,
-          context: {
-            headers: {
-              Authorization: `Bearer ${
-                import.meta.env.VITE_HYGRAPH_TOKEN as string
-              }`,
-            },
-          },
-        })
-        .then((response) => {
-          // console.log(response.data.tasks);
-          return response.data.tasks;
-        })
-        .then((data) => {
-          console.log(data);
-          setApiResp(data);
-          console.log(apiResp);
-        });
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
+  // useEffect(() => {
+  //   // try {
+  //   //   client
+  //   //     .query({
+  //   //       query: gql`
+  //   //       query Tasks {
+  //   //         tasks(orderBy: createdAt_DESC) {
+  //   //           createdAt
+  //   //           id
+  //   //           isTaskDone
+  //   //           publishedAt
+  //   //           taskDescription
+  //   //           updatedAt
+  //   //         }
+  //   //       }`,
+  //   //       context: {
+  //   //         headers: {
+  //   //           Authorization: `Bearer ${
+  //   //             import.meta.env.VITE_HYGRAPH_TOKEN as string
+  //   //           }`,
+  //   //         },
+  //   //       },
+  //   //     })
+  //   //     .then((response) => {
+  //   //       // console.log(response.data.tasks);
+  //   //       return response.data.tasks;
+  //   //     })
+  //   //     .then((data) => {
+  //   //       console.log(data);
+  //   //       setApiResp(data);
+  //   //       console.log(apiResp);
+  //   //     });
+  //   // } catch (err) {
+  //   //   console.log(err);
+  //   // }
+  // }, []);
 
   return (
     <div className="flex flex-col items-center relative">
@@ -134,7 +137,7 @@ function App() {
         </div>
       </section>
 
-      {apiResp.length > 0 ? (
+      {apiResp && apiResp.length > 0 ? (
         <div className="container mt-4">
           {/* {taskList.map((task: TaskProps, i: number) => {
             return (
