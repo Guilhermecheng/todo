@@ -7,11 +7,24 @@ import { HiOutlinePlusCircle } from 'react-icons/hi';
 import { GlobalContext, TaskProps } from './contexts/Tasks';
 import { Task } from './components/Task';
 import { NoTask } from './components/NoTask';
-import { GET_TODOS } from './queries/queries';
+import { TaskList } from './components/TaskList';
+// import { GET_TODOS } from './queries/queries';
 
 function App() {
+  const GET_TODOS = gql`
+  query GetTasks {
+    tasks {
+      createdAt
+      id
+      isTaskDone
+      publishedAt
+      taskDescription
+      updatedAt
+    }
+  }
+`;
   const { loading, error, data } = useQuery(GET_TODOS);
-  // console.log(data);
+  console.log(data);
 
   const { taskList, setTaskList } = useContext(GlobalContext);
 
@@ -58,43 +71,6 @@ function App() {
     }
   }
 
-  // useEffect(() => {
-  //   // try {
-  //   //   client
-  //   //     .query({
-  //   //       query: gql`
-  //   //       query Tasks {
-  //   //         tasks(orderBy: createdAt_DESC) {
-  //   //           createdAt
-  //   //           id
-  //   //           isTaskDone
-  //   //           publishedAt
-  //   //           taskDescription
-  //   //           updatedAt
-  //   //         }
-  //   //       }`,
-  //   //       context: {
-  //   //         headers: {
-  //   //           Authorization: `Bearer ${
-  //   //             import.meta.env.VITE_HYGRAPH_TOKEN as string
-  //   //           }`,
-  //   //         },
-  //   //       },
-  //   //     })
-  //   //     .then((response) => {
-  //   //       // console.log(response.data.tasks);
-  //   //       return response.data.tasks;
-  //   //     })
-  //   //     .then((data) => {
-  //   //       console.log(data);
-  //   //       setApiResp(data);
-  //   //       console.log(apiResp);
-  //   //     });
-  //   // } catch (err) {
-  //   //   console.log(err);
-  //   // }
-  // }, []);
-
   return (
     <div className="flex flex-col items-center relative">
       <div className="w-full h-[200px] bg-[#0D0D0D] flex items-center justify-center">
@@ -137,37 +113,12 @@ function App() {
         </div>
       </section>
 
-      {apiResp && apiResp.length > 0 ? (
-        <div className="container mt-4">
-          {/* {taskList.map((task: TaskProps, i: number) => {
-            return (
-              <Task
-                key={i}
-                id={task.id}
-                task={task.task}
-                isDone={task.isDone}
-                setCount={setCount}
-                setTotalCount={setTotalCount}
-              />
-            );
-          })} */}
-
-          {apiResp.map((task: any, i: number) => {
-            return (
-              <Task
-                key={i}
-                id={task.id}
-                task={task.taskDescription}
-                isDone={task.isTaskDone}
-                setCount={setCount}
-                setTotalCount={setTotalCount}
-              />
-            );
-          })}
-        </div>
-      ) : (
-        <NoTask />
-      )}
+      <TaskList
+        // @ts-ignore
+        setCount={setCount}
+        // @ts-ignore
+        setTotalCount={setTotalCount}
+      />
     </div>
   );
 }

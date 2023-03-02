@@ -3,6 +3,7 @@ import { IoCheckmarkCircleSharp } from 'react-icons/io5';
 import { HiOutlineTrash } from 'react-icons/hi';
 import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { GlobalContext, TaskProps } from '../contexts/Tasks';
+import { gql, useMutation } from '@apollo/client';
 
 interface TaskCompProps extends TaskProps {
   setCount: Dispatch<SetStateAction<number>>;
@@ -19,6 +20,17 @@ export function Task({
   const { taskList, setTaskList } = useContext(GlobalContext);
   const [taskState, setTaskState] = useState(isDone);
 
+  const MARK_TODO_STATE = gql`
+    mutation MarkTaskAsDone($id: ID!, $taskState: Boolean!) {
+      updateTask(where: {id: {_eq: $id}},
+      data: {
+        isTaskDone: $taskState
+      })
+    }
+  `;
+  const [markTodoState, { data, loading, error }] =
+    useMutation(MARK_TODO_STATE);
+
   function isDoneCount() {
     let counter = 0;
     taskList.filter((current: TaskProps) => {
@@ -30,6 +42,7 @@ export function Task({
   }
 
   function getTaskDone(id: string) {
+    markTodoState({ variables: { id, taskState: true } });
     let list = taskList;
     let itemIndex = taskList.findIndex((x) => x.id === id);
 
