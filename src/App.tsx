@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from 'react';
 import uuid from 'react-uuid';
 
-import { useQuery, gql } from '@apollo/client';
+import { useQuery, gql, useMutation } from '@apollo/client';
 
 import { HiOutlinePlusCircle } from 'react-icons/hi';
 import { GlobalContext, TaskProps } from './contexts/Tasks';
@@ -12,18 +12,33 @@ import { TaskList } from './components/TaskList';
 
 function App() {
   const GET_TODOS = gql`
-  query GetTasks {
-    tasks {
-      createdAt
-      id
-      isTaskDone
-      publishedAt
-      taskDescription
-      updatedAt
+    query GetTasks {
+      tasks {
+        createdAt
+        id
+        isTaskDone
+        publishedAt
+        taskDescription
+        updatedAt
+      }
     }
-  }
-`;
-  const { loading, error, data } = useQuery(GET_TODOS);
+  `;
+
+  const CREATE_TODO = gql`
+    mutation CreateTask($task: String!, $isTaskDone: Boolean!) {
+      createTask(data: {
+        taskDescription: $task, 
+        isTaskDone: $isTaskDone
+      }) {
+        id
+        stage
+      }
+    }
+  `;
+
+  const { loading, data } = useQuery(GET_TODOS);
+  const [createTask, { error }] = useMutation(CREATE_TODO);
+
   console.log(data);
 
   const { taskList, setTaskList } = useContext(GlobalContext);
@@ -51,6 +66,19 @@ function App() {
       setTotalCount(taskList.length);
     }
   }
+  function saveNewTaskToList2() {
+    if (input !== '') {
+      createTask({
+        variables: {
+          task: input,
+          isTaskDone: false,
+        },
+      });
+      // @ts-ignore
+      inputRef.current.value = '';
+      setInput('');
+    }
+  }
 
   function isDoneCount() {
     let counter = 0;
@@ -67,9 +95,16 @@ function App() {
       (event.code === 'Enter' || event.code === 'NumpadEnter') &&
       event.target.id === 'inputText'
     ) {
-      saveNewTaskToList();
+      saveNewTaskToList2();
     }
   }
+
+  useEffect(() => {
+    console.log(error);
+    if (error) {
+      console.log(error.message);
+    }
+  }, [error, data]);
 
   return (
     <div className="flex flex-col items-center relative">

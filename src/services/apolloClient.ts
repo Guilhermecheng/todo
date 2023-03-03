@@ -23,8 +23,8 @@ const authLink = setContext((_, { headers }) => {
 });
 
 const client = new ApolloClient({
-  // link: authLink.concat(httpLink),
-  uri: import.meta.env.VITE_HYGRAPH_ENDPOINT as string,
+  link: authLink.concat(httpLink),
+  //uri: import.meta.env.VITE_HYGRAPH_ENDPOINT as string,
 
   cache: new InMemoryCache(),
 });
