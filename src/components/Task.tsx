@@ -1,13 +1,20 @@
 import { MdOutlineRadioButtonUnchecked } from 'react-icons/md';
 import { IoCheckmarkCircleSharp } from 'react-icons/io5';
 import { HiOutlineTrash } from 'react-icons/hi';
-import { Dispatch, SetStateAction, useContext, useState } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { GlobalContext, TaskProps } from '../contexts/Tasks';
-import { gql, useMutation } from '@apollo/client';
+import { gql, useMutation, useQuery } from '@apollo/client';
 
 interface TaskCompProps extends TaskProps {
   setCount: Dispatch<SetStateAction<number>>;
   setTotalCount: Dispatch<SetStateAction<number>>;
+  refetch: () => void;
 }
 
 export function Task({
@@ -16,6 +23,7 @@ export function Task({
   isDone,
   setCount,
   setTotalCount,
+  refetch,
 }: TaskCompProps) {
   const { taskList, setTaskList } = useContext(GlobalContext);
   const [taskState, setTaskState] = useState(isDone);
@@ -28,8 +36,16 @@ export function Task({
       })
     }
   `;
-  const [markTodoState, { data, loading, error }] =
-    useMutation(MARK_TODO_STATE);
+  const [markTodoState, { data, loading, error }] = useMutation(
+    MARK_TODO_STATE,
+    {
+      onCompleted: () => refetch(),
+    }
+  );
+
+  useEffect(() => {
+    console.log(error);
+  }, [error, loading, data]);
 
   function isDoneCount() {
     let counter = 0;
@@ -42,6 +58,7 @@ export function Task({
   }
 
   function getTaskDone(id: string) {
+    console.log(id);
     markTodoState({ variables: { id, taskState: true } });
     let list = taskList;
     let itemIndex = taskList.findIndex((x) => x.id === id);

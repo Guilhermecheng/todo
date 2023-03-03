@@ -21,7 +21,7 @@ export function TaskList({ setCount, setTotalCount }: TaskListProps) {
   }
 `;
 
-  const { loading, error, data } = useQuery(GET_TODOS);
+  const { loading, error, data, refetch } = useQuery(GET_TODOS);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error!</div>;
@@ -39,6 +39,8 @@ export function TaskList({ setCount, setTotalCount }: TaskListProps) {
                 isDone={task.isTaskDone}
                 setCount={setCount}
                 setTotalCount={setTotalCount}
+                // @ts-ignore
+                refetch={refetch}
               />
             );
           })}
