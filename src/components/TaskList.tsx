@@ -1,4 +1,5 @@
 import { useQuery, gql } from '@apollo/client';
+import { GET_TODOS } from '../queries/queries';
 import { NoTask } from './NoTask';
 import { Task } from './Task';
 
@@ -8,19 +9,6 @@ interface TaskListProps {
 }
 
 export function TaskList({ setCount, setTotalCount }: TaskListProps) {
-  const GET_TODOS = gql`
-  query GetTasks {
-    tasks {
-      createdAt
-      id
-      isTaskDone
-      publishedAt
-      taskDescription
-      updatedAt
-    }
-  }
-`;
-
   const { loading, error, data, refetch } = useQuery(GET_TODOS);
 
   if (loading) return <div>Loading...</div>;

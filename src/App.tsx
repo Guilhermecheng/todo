@@ -2,44 +2,17 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import uuid from 'react-uuid';
 
 import { useQuery, gql, useMutation } from '@apollo/client';
+import { GET_TODOS, CREATE_TODO } from './queries/queries';
 
 import { HiOutlinePlusCircle } from 'react-icons/hi';
 import { GlobalContext, TaskProps } from './contexts/Tasks';
 import { Task } from './components/Task';
 import { NoTask } from './components/NoTask';
 import { TaskList } from './components/TaskList';
-// import { GET_TODOS } from './queries/queries';
 
 function App() {
-  const GET_TODOS = gql`
-    query GetTasks {
-      tasks {
-        createdAt
-        id
-        isTaskDone
-        publishedAt
-        taskDescription
-        updatedAt
-      }
-    }
-  `;
-
-  const CREATE_TODO = gql`
-    mutation CreateTask($task: String!, $isTaskDone: Boolean!) {
-      createTask(data: {
-        taskDescription: $task, 
-        isTaskDone: $isTaskDone
-      }) {
-        id
-        stage
-      }
-    }
-  `;
-
-  const { loading, data } = useQuery(GET_TODOS);
+  const { data, refetch } = useQuery(GET_TODOS);
   const [createTask, { error }] = useMutation(CREATE_TODO);
-
-  console.log(data);
 
   const { taskList, setTaskList } = useContext(GlobalContext);
 
@@ -73,6 +46,7 @@ function App() {
           task: input,
           isTaskDone: false,
         },
+        onCompleted: () => refetch(),
       });
       // @ts-ignore
       inputRef.current.value = '';

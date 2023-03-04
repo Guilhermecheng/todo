@@ -10,6 +10,7 @@ import {
 } from 'react';
 import { GlobalContext, TaskProps } from '../contexts/Tasks';
 import { gql, useMutation, useQuery } from '@apollo/client';
+import { DELETE_TASK } from '../queries/queries';
 
 interface TaskCompProps extends TaskProps {
   setCount: Dispatch<SetStateAction<number>>;
@@ -45,6 +46,17 @@ export function Task({
     }
   );
 
+  const [
+    deleteTaskMutation,
+    {
+      data: deleteTaskData,
+      loading: deleteTaskLoading,
+      error: deleteTaskError,
+    },
+  ] = useMutation(DELETE_TASK, {
+    onCompleted: () => refetch(),
+  });
+
   useEffect(() => {
     console.log(error);
     if (error) {
@@ -65,7 +77,7 @@ export function Task({
   function getTaskDone(id: string) {
     console.log(id);
     markTodoState({
-      variables: { taskId: 'clejhbcsh2flz0blvvnjj1dsy', taskState: true },
+      variables: { taskId: id, taskState: true },
     });
     let list = taskList;
     let itemIndex = taskList.findIndex((x) => x.id === id);
@@ -83,6 +95,7 @@ export function Task({
   }
 
   function deleteTask(id: string) {
+    deleteTaskMutation({ variables: { id } });
     let itemIndex = taskList.findIndex((x) => x.id === id);
     let newList = taskList.splice(itemIndex, 1);
     setTaskList((taskList) => [...taskList, ...newList]);
