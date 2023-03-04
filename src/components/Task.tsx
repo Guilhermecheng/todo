@@ -30,13 +30,18 @@ export function Task({
   const [taskState, setTaskState] = useState(isDone);
 
   const MARK_TODO_STATE = gql`
-    mutation MarkTaskAsDone($taskId: ID!, $taskState: Boolean!) {
-      updateTask(
-        where: { id: $taskId },
-        data: {
-          isTaskDone: $taskState
-        }
-      )
+    mutation UpdateTask($id:ID!, $isTaskDone: Boolean!) {
+      updateTask(where: {
+        id: $id
+      },
+      data: {
+        isTaskDone: $isTaskDone
+      }
+      ) {
+        id
+        taskDescription
+        isTaskDone
+      } 
     }
   `;
   const [markTodoState, { data, loading, error }] = useMutation(
@@ -77,7 +82,7 @@ export function Task({
   function getTaskDone(id: string) {
     console.log(id);
     markTodoState({
-      variables: { taskId: id, taskState: true },
+      variables: { id, isTaskDone: true },
     });
     let list = taskList;
     let itemIndex = taskList.findIndex((x) => x.id === id);
