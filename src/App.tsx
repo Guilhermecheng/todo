@@ -1,45 +1,20 @@
-import { useContext, useEffect, useRef, useState } from 'react';
-import uuid from 'react-uuid';
+import { useEffect, useRef, useState } from 'react';
 
-import { useQuery, gql, useMutation } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import { GET_TODOS, CREATE_TODO } from './queries/queries';
 
 import { HiOutlinePlusCircle } from 'react-icons/hi';
-import { GlobalContext, TaskProps } from './contexts/Tasks';
-import { Task } from './components/Task';
-import { NoTask } from './components/NoTask';
 import { TaskList } from './components/TaskList';
 
 function App() {
   const { data, refetch } = useQuery(GET_TODOS);
   const [createTask, { error }] = useMutation(CREATE_TODO);
 
-  const { taskList, setTaskList } = useContext(GlobalContext);
-
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [input, setInput] = useState('');
-  const [count, setCount] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
-  const [apiResp, setApiResp] = useState([]);
+  const [concludedCount, setConcludedCount] = useState<number>(0);
 
   function saveNewTaskToList() {
-    if (input !== '') {
-      let newList = taskList;
-      newList.push({
-        id: uuid(),
-        task: input,
-        isDone: false,
-      });
-      // @ts-ignore
-      inputRef.current.value = '';
-      setInput('');
-      setTaskList(newList);
-      let counter = isDoneCount();
-      setCount(counter);
-      setTotalCount(taskList.length);
-    }
-  }
-  function saveNewTaskToList2() {
     if (input !== '') {
       createTask({
         variables: {
@@ -55,13 +30,20 @@ function App() {
   }
 
   function isDoneCount() {
-    let counter = 0;
-    taskList.filter((current: TaskProps) => {
-      if (current.isDone) {
-        counter++;
-      }
-    });
-    return counter;
+    if (data) {
+      let counter = 0;
+      console.log(data.tasks);
+      data.tasks.filter((current: any) => {
+        if (current.isTaskDone) {
+          console.log('conta essa porra');
+          counter++;
+        }
+      });
+      console.log(counter);
+      setConcludedCount(counter);
+    } else {
+      setConcludedCount(0);
+    }
   }
 
   function onKeySubmit(event: any) {
@@ -69,16 +51,13 @@ function App() {
       (event.code === 'Enter' || event.code === 'NumpadEnter') &&
       event.target.id === 'inputText'
     ) {
-      saveNewTaskToList2();
+      saveNewTaskToList();
     }
   }
 
   useEffect(() => {
-    console.log(error);
-    if (error) {
-      console.log(error.message);
-    }
-  }, [error, data]);
+    isDoneCount();
+  }, [data]);
 
   return (
     <div className="flex flex-col items-center relative">
@@ -97,7 +76,7 @@ function App() {
           onKeyDown={(e) => onKeySubmit(e)}
         />
         <button
-          onClick={saveNewTaskToList}
+          onClick={() => saveNewTaskToList()}
           className="bg-[#1E6F9F] px-4 py-4 rounded-lg w-24 font-base font-semibold flex flex-nowrap items-center gap-x-2 text-white hover:bg-[#4EA8DE]"
         >
           Criar <HiOutlinePlusCircle size={20} />
@@ -109,25 +88,20 @@ function App() {
           <h2 className="justify-start">
             Tarefas criadas{' '}
             <span className="text-white bg-gray-600 rounded-lg px-2 ml-2">
-              {totalCount}
+              {data ? data.tasks.length : 0}
             </span>
           </h2>
 
           <h2 className="absolute right-0">
             Concluídas{' '}
             <span className="text-white bg-gray-600 rounded-lg px-2 ml-2">
-              {count} de {totalCount}
+              {concludedCount} de {data ? data.tasks.length : 0}
             </span>
           </h2>
         </div>
       </section>
 
-      <TaskList
-        // @ts-ignore
-        setCount={setCount}
-        // @ts-ignore
-        setTotalCount={setTotalCount}
-      />
+      <TaskList />
     </div>
   );
 }

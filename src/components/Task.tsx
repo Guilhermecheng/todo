@@ -1,49 +1,16 @@
 import { MdOutlineRadioButtonUnchecked } from 'react-icons/md';
 import { IoCheckmarkCircleSharp } from 'react-icons/io5';
 import { HiOutlineTrash } from 'react-icons/hi';
-import {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
-import { GlobalContext, TaskProps } from '../contexts/Tasks';
-import { gql, useMutation, useQuery } from '@apollo/client';
-import { DELETE_TASK } from '../queries/queries';
+import { useEffect } from 'react';
+import { TaskProps } from '../contexts/Tasks';
+import { useMutation } from '@apollo/client';
+import { MARK_TODO_STATE, DELETE_TASK } from '../queries/queries';
 
 interface TaskCompProps extends TaskProps {
-  setCount: Dispatch<SetStateAction<number>>;
-  setTotalCount: Dispatch<SetStateAction<number>>;
   refetch: () => void;
 }
 
-export function Task({
-  task,
-  id,
-  isDone,
-  setCount,
-  setTotalCount,
-  refetch,
-}: TaskCompProps) {
-  const { taskList, setTaskList } = useContext(GlobalContext);
-  const [taskState, setTaskState] = useState(isDone);
-
-  const MARK_TODO_STATE = gql`
-    mutation UpdateTask($id:ID!, $isTaskDone: Boolean!) {
-      updateTask(where: {
-        id: $id
-      },
-      data: {
-        isTaskDone: $isTaskDone
-      }
-      ) {
-        id
-        taskDescription
-        isTaskDone
-      } 
-    }
-  `;
+export function Task({ task, id, isDone, refetch }: TaskCompProps) {
   const [markTodoState, { data, loading, error }] = useMutation(
     MARK_TODO_STATE,
     {
@@ -69,53 +36,21 @@ export function Task({
     }
   }, [error, loading, data]);
 
-  function isDoneCount() {
-    let counter = 0;
-    taskList.filter((current: TaskProps) => {
-      if (current.isDone) {
-        counter++;
-      }
-    });
-    return counter;
-  }
-
-  function getTaskDone(id: string) {
-    console.log(id);
+  function getTaskDone(id: string, isTaskDone: boolean) {
     markTodoState({
-      variables: { id, isTaskDone: true },
+      variables: { id, isTaskDone: !isTaskDone },
     });
-    let list = taskList;
-    let itemIndex = taskList.findIndex((x) => x.id === id);
-
-    list[itemIndex] = {
-      id,
-      task,
-      isDone: !isDone,
-    };
-    setTaskList((taskList) => [...taskList, ...list]);
-    // console.log(taskList);
-    setTaskState(!taskState);
-    let counter = isDoneCount();
-    setCount(counter);
   }
 
   function deleteTask(id: string) {
     deleteTaskMutation({ variables: { id } });
-    let itemIndex = taskList.findIndex((x) => x.id === id);
-    let newList = taskList.splice(itemIndex, 1);
-    setTaskList((taskList) => [...taskList, ...newList]);
-    // console.log(taskList);
-
-    let counter = isDoneCount();
-    setCount(counter);
-    setTotalCount(taskList.length);
   }
 
   return (
     <div className="relative px-4 py-4 bg-[#262626] flex flex-row text-white items-center rounded-md mb-4">
-      {taskState ? (
+      {isDone ? (
         <IoCheckmarkCircleSharp
-          onClick={() => getTaskDone(id)}
+          onClick={() => getTaskDone(id, isDone)}
           size={20}
           className="text-purple-400"
         />
@@ -123,10 +58,10 @@ export function Task({
         <MdOutlineRadioButtonUnchecked
           size={20}
           className="text-blue-400 cursor-pointer hover:text-purple-400"
-          onClick={() => getTaskDone(id)}
+          onClick={() => getTaskDone(id, isDone)}
         />
       )}
-      <span className={`pl-4 ${taskState && 'text-gray-500 line-through'}`}>
+      <span className={`pl-4 ${isDone && 'text-gray-500 line-through'}`}>
         {task}
       </span>
       <HiOutlineTrash

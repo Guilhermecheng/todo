@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 
 export const GET_TODOS = gql`
     query GetTasks {
-      tasks {
+      tasks(orderBy: createdAt_DESC) {
         createdAt
         id
         isTaskDone
@@ -33,13 +33,18 @@ export const DELETE_TASK = gql`
   }
 `;
 
-// export const MARK_TODO_AS_DONE = gql`
-//   mutation MarkTaskAsDone {
-//     updateTask(where: {
-//       id: "clejhbcsh2flz0blvvnjj1dsy"
-//     },
-//     data: {
-//       isTaskDone: true
-//     }
-//   }
-// `;
+export const MARK_TODO_STATE = gql`
+  mutation UpdateTask($id:ID!, $isTaskDone: Boolean!) {
+    updateTask(where: {
+      id: $id
+    },
+    data: {
+      isTaskDone: $isTaskDone
+    }
+    ) {
+      id
+      taskDescription
+      isTaskDone
+    } 
+  }
+`;
