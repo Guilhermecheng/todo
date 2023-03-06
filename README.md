@@ -16,7 +16,7 @@ You can:
 - mark as completed
 - delete a task
 
-Project created using React, Vite, Graphql and Hygraph CMS.
+**Project created using React, Vite, Graphql and Hygraph CMS.**
 
 Created using React. Based on Rocketseat Ignite exercise.<br/>
 https://www.rocketseat.com.br/
